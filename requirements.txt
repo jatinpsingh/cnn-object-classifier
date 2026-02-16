@@ -1,0 +1,9 @@
+# Deep Learning
+tensorflow==2.16.1
+
+# Data Processing & Augmentation
+numpy==1.26.4
+albumentations==1.4.0
+opencv-python==4.9.0.80
+tqdm==4.66.2
+PyYAML==6.0.1
