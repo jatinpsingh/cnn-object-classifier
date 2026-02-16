@@ -23,7 +23,7 @@ A CNN-based object classification pipeline capable of classifying 39 different o
   - Custom CNN and Transfer Learning support.
   - Automated train/val/test splitting.
 
-## 🛠 Environment Setup
+## Environment Setup
 
 This project uses a Conda environment named `image_classification`.
 
