@@ -7,3 +7,8 @@ albumentations==2.0.8
 opencv-python>=4.10.0  # approximate mapping for conda's 4.13.0
 tqdm==4.67.3
 PyYAML==6.0.2
+
+# Visualization & Evaluation
+matplotlib==3.10.8
+seaborn==0.13.2
+scikit-learn==1.8.0
