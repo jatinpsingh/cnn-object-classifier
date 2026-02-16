@@ -1,0 +1,28 @@
+experiment_name: convnexttiny
+
+model:
+  type: ConvNeXtTiny
+  weights: imagenet
+  freeze_base: true
+  input_shape: [224, 224, 3]
+
+head:
+  units: 256
+  dropout: 0.3
+
+data:
+  manifest: split_manifest_augmented.json
+  batch_size: 32
+  img_size: [224, 224]
+
+training:
+  optimizer: adam
+  learning_rate: 0.001
+  loss: categorical_crossentropy
+  metrics: [accuracy]
+  epochs: 100
+  early_stopping_patience: 10
+  callbacks: [early_stopping, model_checkpoint, reduce_lr]
+
+output:
+  model_dir: outputs/convnexttiny/

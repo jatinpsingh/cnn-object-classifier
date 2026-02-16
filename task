@@ -1,0 +1,57 @@
+Worker, update src/models.py to support EfficientNetV2S and ConvNeXtTiny, and create 2 YAML configs.
+
+TASK 1: Update src/models.py
+
+Add these entries to the model_map dict inside _build_transfer_model:
+
+    'EfficientNetV2S': (tf.keras.applications.EfficientNetV2S, tf.keras.applications.efficientnet_v2.preprocess_input),
+    'ConvNeXtTiny': (tf.keras.applications.ConvNeXtTiny, tf.keras.applications.convnext.preprocess_input),
+
+No other changes needed. The existing generic transfer learning builder handles the rest.
+
+TASK 2: Create 2 YAML config files
+
+FILE: configs/efficientnetv2s.yaml
+
+experiment_name: efficientnetv2s
+
+model:
+  type: EfficientNetV2S
+  weights: imagenet
+  freeze_base: true
+  input_shape: [224, 224, 3]
+
+head:
+  units: 256
+  dropout: 0.3
+
+data:
+  manifest: split_manifest_augmented.json
+  batch_size: 32
+  img_size: [224, 224]
+
+training:
+  optimizer: adam
+  learning_rate: 0.001
+  loss: categorical_crossentropy
+  metrics: [accuracy]
+  epochs: 20
+  early_stopping_patience: 5
+  callbacks: [early_stopping, model_checkpoint, reduce_lr]
+
+output:
+  model_dir: outputs/efficientnetv2s/
+
+FILE: configs/convnexttiny.yaml
+
+Same structure as above with:
+  experiment_name: convnexttiny
+  model.type: ConvNeXtTiny
+  output.model_dir: outputs/convnexttiny/
+
+VERIFY
+
+Before training, verify these work by running:
+    conda activate image_classification
+    python -c "from models import load_config, build_model; c = load_config('configs/efficientnetv2s.yaml'); build_model(c, 39)"
+    python -c "from models import load_config, build_model; c = load_config('configs/convnexttiny.yaml'); build_model(c, 39)"

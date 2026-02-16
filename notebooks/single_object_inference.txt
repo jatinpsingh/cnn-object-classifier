@@ -1,0 +1,142 @@
+#!/usr/bin/env python
+# coding: utf-8
+
+# # Single Object Classification Inference
+# 
+# This notebook loads a trained model and runs inference on a single image.
+
+# In[ ]:
+
+
+import tensorflow as tf
+import matplotlib.pyplot as plt
+import numpy as np
+import json
+from pathlib import Path
+import IPython.display as display
+
+# Define Project Root (Assuming notebook is in notebooks/)
+PROJECT_ROOT = Path.cwd().parent
+print(f"Project Root: {PROJECT_ROOT}")
+
+
+# In[ ]:
+
+
+# Configuration (Edit this cell)
+MODEL_REL_PATH = "outputs/custom_cnn_v1/best_model.keras"  # Path relative to project root
+IMAGE_REL_PATH = "data/OBJ_001/img.jpg"  # Update with a real image path
+MANIFEST_REL_PATH = "split_manifest.json"
+CONFIDENCE_THRESHOLD = 0.5
+IMG_SIZE = (224, 224)
+
+
+# In[ ]:
+
+
+# Load Class Names
+manifest_path = PROJECT_ROOT / MANIFEST_REL_PATH
+
+if not manifest_path.exists():
+    raise FileNotFoundError(f"Manifest not found at {manifest_path}")
+
+with open(manifest_path, 'r') as f:
+    manifest = json.load(f)
+
+class_to_idx = manifest.get('class_to_idx', {})
+idx_to_class = {v: k for k, v in class_to_idx.items()}
+num_classes = len(class_to_idx)
+
+print(f"Loaded {num_classes} classes from manifest.")
+
+
+# In[ ]:
+
+
+# Load Model
+model_path = PROJECT_ROOT / MODEL_REL_PATH
+
+if not model_path.exists():
+    raise FileNotFoundError(f"Model not found at {model_path}")
+
+print(f"Loading model from {model_path}...")
+model = tf.keras.models.load_model(model_path)
+print("Model loaded successfully.")
+model.summary()
+
+
+# In[ ]:
+
+
+# Load and Preprocess Image
+image_path = PROJECT_ROOT / IMAGE_REL_PATH
+
+if not image_path.exists():
+    # Try to find a valid image if the default one doesn't exist
+    print(f"Image not found at {image_path}. Trying to find a random image from data/...")
+    data_dir = PROJECT_ROOT / "data"
+    possible_images = list(data_dir.glob("**/*.jpg")) + list(data_dir.glob("**/*.png"))
+    if possible_images:
+        image_path = possible_images[0]
+        print(f"Using found image: {image_path}")
+    else:
+        raise FileNotFoundError(f"No images found in {data_dir}")
+
+def preprocess_image(path, target_size):
+    image_content = tf.io.read_file(str(path))
+    # decode_image handles both png and jpg
+    image = tf.image.decode_image(image_content, channels=3, expand_animations=False)
+    image = tf.image.resize(image, target_size)
+    # Cast to float32 (keep 0-255 range)
+    image = tf.cast(image, tf.float32)
+    return image
+
+original_image_tensor = preprocess_image(image_path, IMG_SIZE)
+# Add batch dimension
+input_tensor = tf.expand_dims(original_image_tensor, 0)
+
+# Convert to uint8 for display
+display_image = tf.cast(original_image_tensor, tf.uint8).numpy()
+
+print(f"Processed image shape: {input_tensor.shape}")
+
+
+# In[ ]:
+
+
+# Run Inference
+print("Running inference...")
+predictions = model.predict(input_tensor, verbose=0)
+predicted_idx = np.argmax(predictions[0])
+confidence = predictions[0][predicted_idx]
+predicted_class = idx_to_class.get(predicted_idx, "Unknown")
+
+# Display Result
+plt.figure(figsize=(8, 8))
+plt.imshow(display_image)
+plt.axis('off')
+
+if confidence >= CONFIDENCE_THRESHOLD:
+    title_text = f"{predicted_class} ({confidence:.2%})"
+    title_color = 'green'
+else:
+    title_text = f"UNCERTAIN - {predicted_class} ({confidence:.2%})"
+    title_color = 'red'
+
+plt.title(title_text, color=title_color, fontsize=16)
+plt.show()
+
+
+# In[ ]:
+
+
+# Top-5 Predictions
+top_5_indices = np.argsort(predictions[0])[-5:][::-1]
+
+print(f"{'Rank':<5} | {'Class':<20} | {'Confidence'}")
+print("-" * 40)
+for i, idx in enumerate(top_5_indices):
+    class_name = idx_to_class.get(idx, "Unknown")
+    conf = predictions[0][idx]
+    print(f"{i+1:<5} | {class_name:<20} | {conf:.2%}")
+
