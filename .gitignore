@@ -53,3 +53,7 @@ outputs/
 split_manifest.json
 split_manifest_augmented.json
 *.log
+
+# Local/Private
+local/
+GEMINI.md
