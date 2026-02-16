@@ -1,6 +1,6 @@
 # Object Classification Pipeline
 
-A CNN-based object classification system capable of classifying 39 different object classes. This project supports training custom CNNs as well as fine-tuning state-of-the-art transfer learning models (EfficientNet, ConvNeXt, MobileNet).
+A CNN-based object classification pipeline capable of classifying 39 different object classes. This project supports training custom CNNs as well as fine-tuning state-of-the-art transfer learning models (EfficientNet, ConvNeXt, MobileNet).
 
 ## Table of Contents
 - [Project Overview](#project-overview)
