@@ -1,4 +1,4 @@
-# Image Classification Project
+# Object Classification Pipeline
 
 A CNN-based object classification system capable of classifying 39 different object classes. This project supports training custom CNNs as well as fine-tuning state-of-the-art transfer learning models (EfficientNet, ConvNeXt, MobileNet).
 
@@ -47,7 +47,6 @@ This project uses a Conda environment named `image_classification`.
 ├── data/                        # Raw dataset (39 class subfolders)
 ├── augmented_data/              # Generated augmented images
 ├── outputs/                     # Training artifacts (models, logs)
-├── notebooks/                   # Jupyter notebooks for inference/analysis
 ├── src/                         # Source code
 │   ├── augment.py               # Offline data augmentation script
 │   ├── dataset.py               # TensorFlow dataset pipeline
