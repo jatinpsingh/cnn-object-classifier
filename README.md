@@ -2,7 +2,7 @@
 
 A CNN-based object classification system capable of classifying 39 different object classes. This project supports training custom CNNs as well as fine-tuning state-of-the-art transfer learning models (EfficientNet, ConvNeXt, MobileNet).
 
-## 📋 Table of Contents
+## Table of Contents
 - [Project Overview](#project-overview)
 - [Environment Setup](#environment-setup)
 - [Project Structure](#project-structure)
@@ -13,7 +13,7 @@ A CNN-based object classification system capable of classifying 39 different obj
   - [4. Evaluation & Inference](#4-evaluation--inference)
 - [Available Models](#available-models)
 
-## 🚀 Project Overview
+## Project Overview
 
 - **Goal:** Classify images into one of 39 categories (e.g., OBJ_001, OBJ_002, ...).
 - **Framework:** TensorFlow/Keras.
@@ -29,19 +29,17 @@ This project uses a Conda environment named `image_classification`.
 
 1. **Create and Activate Environment:**
    ```bash
-   conda create -n image_classification python=3.10
+   conda create -n image_classification python=3.12
    conda activate image_classification
    ```
 
 2. **Install Dependencies:**
-   Ensure you have the necessary libraries. Using a GPU-enabled TensorFlow is highly recommended.
+   Install the required libraries using `pip` and the provided `requirements.txt` file.
    ```bash
-   conda install tensorflow-gpu albumentations opencv pyyaml tqdm numpy
-   # Or via pip if conda packages are missing
-   # pip install tensorflow albumentations opencv-python pyyaml tqdm numpy
+   pip install -r requirements.txt
    ```
 
-## 📂 Project Structure
+## Project Structure
 
 ```
 .
@@ -61,23 +59,29 @@ This project uses a Conda environment named `image_classification`.
 └── split_manifest_augmented.json # Train/Val/Test splits (with Augmentation)
 ```
 
-## 🔄 Workflow
+## Workflow
 
-### 1. Data Preparation
+### 1. Dataset Download
+Download the dataset from the following link:
+[Google Drive Link](https://drive.google.com/drive/folders/1lQW22uf1tpphMuNlPRoQ8M4smt9w9qLB?usp=drive_link)
+
+Extract/place the dataset folder (containing the 39 class subfolders) into the project directory so that it resides at `data/`.
+
+### 2. Data Preparation
 Scans the `data/` directory and creates a JSON manifest defining train/val/test splits.
 
 ```bash
 python src/prepare_data.py --data_dir data --output split_manifest.json
 ```
 
-### 2. Data Augmentation
+### 3. Data Augmentation
 Performs offline augmentation on the training split. This creates a new directory `augmented_data/` and a new manifest.
 
 ```bash
 python src/augment.py --manifest split_manifest.json --output_dir augmented_data
 ```
 
-### 3. Training
+### 4. Training
 Train a model using a specific configuration file. The script uses `split_manifest_augmented.json` by default if configured in the YAML.
 
 **Basic Usage:**
@@ -91,24 +95,36 @@ You can override config values directly from the CLI:
 python src/train.py --config configs/efficientnetv2s.yaml --epochs 50 --learning_rate 0.0001
 ```
 
-### 4. Evaluation & Inference
-- **Evaluation:** Run `src/evaluate.py` (if available/configured) to test model performance.
-- **Inference:** Check `notebooks/single_object_inference.ipynb` for examples on how to run inference on single images.
+### 5. Evaluation & Inference
 
-## 🧠 Available Models
+**Model Evaluation:**
+Calculate accuracy, precision/recall, and generate a confusion matrix on the test set.
+```bash
+python src/evaluate.py --config configs/custom_cnn.yaml --weights outputs/custom_cnn/best_model.keras
+```
+*Outputs are saved to the model's output directory (e.g., `outputs/custom_cnn/evaluation_results.json`).*
+
+**Single Image Inference:**
+Predict the class of a single image using a trained model.
+```bash
+python src/inference.py data/OBJ_001/001.jpg outputs/custom_cnn/best_model.keras
+```
+*Arguments:* `python src/inference.py <image_path> <model_path>`
+
+## Available Models
 
 Configuration files can be found in `configs/`:
 
-| Config File | Model Type | Description |
-| :--- | :--- | :--- |
-| `custom_cnn.yaml` | Custom CNN | A simple custom CNN architecture. |
-| `efficientnetv2s.yaml` | EfficientNetV2S | Transfer learning using EfficientNetV2 Small (ImageNet weights). |
-| `convnexttiny.yaml` | ConvNeXtTiny | Transfer learning using ConvNeXt Tiny. |
-| `mobilenetv2.yaml` | MobileNetV2 | Lightweight model suitable for mobile. |
-| `mobilenetv3large.yaml`| MobileNetV3Large | Optimized MobileNet V3 Large. |
-| `mobilenetv3small.yaml`| MobileNetV3Small | Optimized MobileNet V3 Small. |
+| Config File | Model Type |
+| :--- | :--- |
+| `custom_cnn.yaml` | Custom CNN |
+| `efficientnetv2s.yaml` | EfficientNetV2S |
+| `convnexttiny.yaml` | ConvNeXtTiny |
+| `mobilenetv2.yaml` | MobileNetV2 |
+| `mobilenetv3large.yaml`| MobileNetV3Large |
+| `mobilenetv3small.yaml`| MobileNetV3Small |
 
-## 📝 Notes
+## Notes
 - **Path Resolution:** Scripts in `src/` automatically resolve the project root, so they can be run from anywhere in the project tree.
 - **Normalization:** 
   - `src/dataset.py` loads images as `float32` [0-255].
