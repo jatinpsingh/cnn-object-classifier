@@ -34,6 +34,7 @@ This project uses a Conda environment named `image_classification`.
    ```bash
    pip install -r requirements.txt
    ```
+   To add GPU accelaration, refer: [Tensorflow docs](https://www.tensorflow.org/install/pip#linux)
 
 ## Project Structure
 
