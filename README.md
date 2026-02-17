@@ -7,10 +7,6 @@ A CNN-based object classification pipeline capable of classifying 39 different o
 - [Environment Setup](#environment-setup)
 - [Project Structure](#project-structure)
 - [Workflow](#workflow)
-  - [1. Data Preparation](#1-data-preparation)
-  - [2. Data Augmentation](#2-data-augmentation)
-  - [3. Training](#3-training)
-  - [4. Evaluation & Inference](#4-evaluation--inference)
 - [Available Models](#available-models)
 
 ## Project Overview
