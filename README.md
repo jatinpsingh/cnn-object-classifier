@@ -2,6 +2,8 @@
 
 A CNN-based object classification pipeline capable of classifying 39 different object classes. This project supports training custom CNNs as well as fine-tuning state-of-the-art transfer learning models (EfficientNet, ConvNeXt, MobileNet).
 
+<img width="2600" height="600" alt="random_image_grid" src="https://github.com/user-attachments/assets/636a8c5e-877f-445e-aa9c-b7468c973dc6" />
+
 ## Table of Contents
 - [Project Overview](#project-overview)
 - [Environment Setup](#environment-setup)
